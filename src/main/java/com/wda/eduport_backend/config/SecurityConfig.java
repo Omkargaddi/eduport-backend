@@ -47,7 +47,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://eduport-admin.netlify.app/","https://eduport-user.netlify.app")); // Allow your frontend origin
+        configuration.setAllowedOrigins(Arrays.asList("https://eduport-admin.netlify.app","https://eduport-user.netlify.app")); // Allow your frontend origin
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allow necessary methods
         configuration.setAllowedHeaders(Arrays.asList("*")); // Allow all headers
         configuration.setAllowCredentials(true); // Allow cookies/credentials
