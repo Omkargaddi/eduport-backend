@@ -14,12 +14,15 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
 import java.util.Optional;
 
 @RestController
@@ -37,15 +40,28 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) throws MessagingException {
-        String token = authService.login(request.getEmail(), request.getPassword(),Role.USER);
-        Cookie cookie = new Cookie("jwt", token);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(15 * 60); // 15 minutes
-        response.addCookie(cookie);
+    public ResponseEntity<String> login(
+            @Valid @RequestBody LoginRequest request,
+            HttpServletResponse servletResponse
+    ) throws MessagingException {
+        String token = authService.login(
+                request.getEmail(),
+                request.getPassword(),
+                Role.USER
+        );
+
+        // Build a properly‑formatted Set‑Cookie header:
+        ResponseCookie cookie = ResponseCookie.from("jwt", token)
+                .httpOnly(true)
+                .secure(true)              // must be HTTPS
+                .sameSite("None")          // allow cross‑site
+                .path("/")
+                .maxAge(Duration.ofMinutes(45))
+                .build();
+
         return ResponseEntity.ok()
-                .header("Authorization", "Bearer " + token)
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .body("User logged in successfully");
     }
 
