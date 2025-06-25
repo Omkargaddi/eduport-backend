@@ -18,19 +18,14 @@ import java.util.List;
 public class UserCategoryController {
     private final CategoryService categoryService;
 
-    /** List all Categories (read‐only) */
     @GetMapping
     public ResponseEntity<List<Category>> listCategories() {
         List<Category> all = categoryService.getAllCategories();
         return ResponseEntity.ok(all);
     }
-
-    /** Get one Category by ID */
     @GetMapping("/{id}")
     public ResponseEntity<CategoryWithSectionsDto> getCategoryWithSections(
             @PathVariable("id") String categoryId) {
-        // Corrected the 'System' capitalization:
-
         CategoryWithSectionsDto dto = categoryService.getCategoryWithSections(categoryId);
         return ResponseEntity.ok(dto);
     }

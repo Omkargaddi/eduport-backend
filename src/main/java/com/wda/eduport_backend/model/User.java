@@ -31,7 +31,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.username; // not username
+        return this.username;
     }
 
     @Override

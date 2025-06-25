@@ -17,7 +17,6 @@ import java.util.List;
 public class AdminCategoryController {
     private final CategoryService categoryService;
 
-    /** Create a new Category */
     @PostMapping
     public ResponseEntity<Category> createCategory(
             @RequestHeader("X-Creator-Id") String creatorId,
@@ -28,7 +27,6 @@ public class AdminCategoryController {
         return ResponseEntity.ok(created);
     }
 
-    /** Get all Categories */
     @GetMapping
     public ResponseEntity<List<Category>> listCategories(
             @RequestHeader("X-Creator-Id") String creatorId
@@ -37,7 +35,6 @@ public class AdminCategoryController {
         return ResponseEntity.ok(all);
     }
 
-    /** Get one Category by ID */
     @GetMapping("/{categoryId}")
     public ResponseEntity<Category> getCategory(
             @RequestHeader("X-Creator-Id") String creatorId,
@@ -48,7 +45,6 @@ public class AdminCategoryController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    /** Update a Category (only creator) */
     @PutMapping("/{categoryId}")
     public ResponseEntity<Category> updateCategory(
             @RequestHeader("X-Creator-Id") String creatorId,
@@ -60,7 +56,6 @@ public class AdminCategoryController {
         return ResponseEntity.ok(updated);
     }
 
-    /** Delete a Category (only creator; must be empty of Sections) */
     @DeleteMapping("/{categoryId}")
     public ResponseEntity<Void> deleteCategory(
             @RequestHeader("X-Creator-Id") String creatorId,

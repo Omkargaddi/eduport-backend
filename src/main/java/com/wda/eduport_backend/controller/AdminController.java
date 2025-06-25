@@ -44,17 +44,12 @@ public class AdminController {
             HttpServletResponse response
     ) throws MessagingException {
         String token = authService.login(request.getEmail(), request.getPassword(), Role.ADMIN);
-
         Cookie cookie = new Cookie("jwt", token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);        // <— secure
+        cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(45 * 60);
-
-        // add the cookie
         response.addCookie(cookie);
-
-        // **manually append SameSite=None** because Cookie API doesn’t support it directly
         response.setHeader(
                 "Set-Cookie",
                 String.format("jwt=%s; Max-Age=%d; Path=/; Secure; HttpOnly; SameSite=None",
@@ -62,7 +57,6 @@ public class AdminController {
                         45 * 60
                 )
         );
-
         return ResponseEntity.ok()
                 .header("Authorization", "Bearer " + token)
                 .body("Admin logged in successfully");

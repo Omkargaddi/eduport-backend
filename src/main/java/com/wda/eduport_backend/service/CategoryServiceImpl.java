@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final SectionRepository sectionRepository;
-    private final PageRepository pageRepository;// for child‐count checks
+    private final PageRepository pageRepository;
 
     @Autowired
     private FileUtil fileUtil;
@@ -65,7 +65,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Category updateCategory(String categoryId, CategoryRequest request, String creatorId,MultipartFile file) {
         Category cat = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
-        // ownership check
+       
         if (!cat.getCreatorId().equals(creatorId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only creator can update this category");
         }
@@ -87,11 +87,10 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteCategory(String categoryId, String creatorId) {
         Category cat = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
-        // ownership check
+        
         if (!cat.getCreatorId().equals(creatorId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only creator can delete this category");
         }
-        // “empty” check: no Sections refer to this category
         long childCount = sectionRepository.countByCategoryId(categoryId);
         if (childCount > 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot delete: Category is not empty");
@@ -101,18 +100,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryWithSectionsDto getCategoryWithSections(String categoryId) {
-        // 1. Fetch category
         Category cat = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
 
-        // 2. Fetch sections ordered by createdAt ascending
         List<Section> sections = sectionRepository.findAllByCategoryIdOrderByCreatedAtAsc(categoryId);
 
-        // 3. For each section, fetch pages ordered by createdAt ascending, map to DTO
         List<SectionDto> sectionDtos = sections.stream().map(section -> {
-            // Fetch pages for this section
             List<Page> pages = pageRepository.findAllBySectionIdOrderByCreatedAtAsc(section.getId());
-            // Map pages to PageDto
             List<PageDto> pageDtos = pages.stream().map(page -> new PageDto(
                     page.getId(),
                     page.getTitle(),
@@ -123,8 +117,6 @@ public class CategoryServiceImpl implements CategoryService {
                     page.getCreatedAt(),
                     page.getUpdatedAt()
             )).collect(Collectors.toList());
-
-            // Map section to SectionDto
             SectionDto dto = new SectionDto();
             dto.setSectionId(section.getId());
             dto.setTitle(section.getTitle());
@@ -137,6 +129,12 @@ public class CategoryServiceImpl implements CategoryService {
             return dto;
         }).collect(Collectors.toList());
 
+        CategoryWithSectionsDto result = getCategoryWithSectionsDto(cat, sectionDtos);
+
+        return result;
+    }
+
+    private static CategoryWithSectionsDto getCategoryWithSectionsDto(Category cat, List<SectionDto> sectionDtos) {
         CategoryWithSectionsDto result = new CategoryWithSectionsDto();
         result.setCategoryId(cat.getId());
         result.setTitle(cat.getTitle());
@@ -148,7 +146,6 @@ public class CategoryServiceImpl implements CategoryService {
         result.setCreatedAt(cat.getCreatedAt());
         result.setUpdatedAt(cat.getUpdatedAt());
         result.setSections(sectionDtos);
-
         return result;
     }
 

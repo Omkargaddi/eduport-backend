@@ -16,7 +16,6 @@ import java.util.List;
 public class AdminPageController {
     private final PageService pageService;
 
-    /** Create a Page under a Section */
     @PostMapping
     public ResponseEntity<Page> createPage(
             @RequestHeader("X-Creator-Id") String creatorId,
@@ -28,7 +27,6 @@ public class AdminPageController {
         return ResponseEntity.ok(created);
     }
 
-    /** List all Pages in a Section */
     @GetMapping
     public ResponseEntity<List<Page>> listPages(
             @RequestHeader("X-Creator-Id") String creatorId,
@@ -36,11 +34,9 @@ public class AdminPageController {
             @PathVariable String sectionId
     ) {
         List<Page> all = pageService.getPagesBySection(sectionId);
-        // We could double-check that section belongs to category, but service methods already verify on create/update.
-        return ResponseEntity.ok(all);
+         return ResponseEntity.ok(all);
     }
 
-    /** Get a single Page by ID (parent IDs must match) */
     @GetMapping("/{pageId}")
     public ResponseEntity<Page> getPage(
             @RequestHeader("X-Creator-Id") String creatorId,
@@ -54,7 +50,6 @@ public class AdminPageController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    /** Update a Page (only creator; parent IDs must match) */
     @PutMapping("/{pageId}")
     public ResponseEntity<Page> updatePage(
             @RequestHeader("X-Creator-Id") String creatorId,
@@ -67,8 +62,7 @@ public class AdminPageController {
         return ResponseEntity.ok(updated);
     }
 
-    /** Delete a Page (only creator) */
-    @DeleteMapping("/{pageId}")
+     @DeleteMapping("/{pageId}")
     public ResponseEntity<Void> deletePage(
             @RequestHeader("X-Creator-Id") String creatorId,
             @PathVariable String categoryId,

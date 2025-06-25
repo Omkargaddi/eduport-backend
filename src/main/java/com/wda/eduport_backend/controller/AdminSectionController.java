@@ -16,7 +16,6 @@ import java.util.List;
 public class AdminSectionController {
     private final SectionService sectionService;
 
-    /** Create a Section under a Category */
     @PostMapping
     public ResponseEntity<Section> createSection(
             @RequestHeader("X-Creator-Id") String creatorId,
@@ -26,8 +25,6 @@ public class AdminSectionController {
         Section created = sectionService.createSection(categoryId, request, creatorId);
         return ResponseEntity.ok(created);
     }
-
-    /** List all Sections in a Category */
     @GetMapping
     public ResponseEntity<List<Section>> listSections(
             @RequestHeader("X-Creator-Id") String adminEmail,
@@ -37,7 +34,6 @@ public class AdminSectionController {
         return ResponseEntity.ok(all);
     }
 
-    /** Get a single Section by ID (parent ID must match) */
     @GetMapping("/{sectionId}")
     public ResponseEntity<Section> getSection(
             @RequestHeader("X-Creator-Id") String creatorId,
@@ -50,7 +46,6 @@ public class AdminSectionController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    /** Update a Section (only creator; parent ID must match) */
     @PutMapping("/{sectionId}")
     public ResponseEntity<Section> updateSection(
             @RequestHeader("X-Creator-Id") String creatorId,
@@ -62,7 +57,6 @@ public class AdminSectionController {
         return ResponseEntity.ok(updated);
     }
 
-    /** Delete a Section (only creator; must be empty of Pages) */
     @DeleteMapping("/{sectionId}")
     public ResponseEntity<Void> deleteSection(
             @RequestHeader("X-Creator-Id") String creatorId,

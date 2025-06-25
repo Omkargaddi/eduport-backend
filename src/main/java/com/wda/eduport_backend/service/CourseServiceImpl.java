@@ -57,17 +57,14 @@ public class CourseServiceImpl implements CourseService{
         CourseEntity cat = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found"));
 
-        // Image update
         if (file != null && !file.isEmpty()) {
             String imageUrl = fileUtil.uploadFile(file);
             cat.setImageUrl(imageUrl);
         }
 
-        // Field updates
         if (request.getTitle() != null && !request.getTitle().isBlank()) {
             cat.setTitle(request.getTitle());
         }
-
         if (request.getDescription() != null && !request.getDescription().isBlank()) {
             cat.setDescription(request.getDescription());
         }
@@ -83,8 +80,6 @@ public class CourseServiceImpl implements CourseService{
         if (request.getLectures() >= 0) {
             cat.setLectures(request.getLectures());
         }
-
-
         if (request.getLanguage() != null && !request.getLanguage().isBlank()) {
             cat.setLanguage(request.getLanguage());
         }
@@ -101,9 +96,8 @@ public class CourseServiceImpl implements CourseService{
             cat.setTags(request.getTags());
         }
 
-        // Save and return updated course
         CourseEntity updated = courseRepository.save(cat);
-        return convertToResponse(updated); // 🔧 use proper converter method
+        return convertToResponse(updated);
     }
 
 

@@ -17,14 +17,12 @@ import java.util.List;
 public class UserSectionController {
     private final SectionService sectionService;
 
-    /** List all Sections in a Category (sorted by createdAt ASC) */
     @GetMapping
     public ResponseEntity<List<Section>> listSections(@PathVariable String categoryId) {
         List<Section> all = sectionService.getSectionsByCategory(categoryId);
         return ResponseEntity.ok(all);
     }
 
-    /** Get a single Section by ID (verify parent match) */
     @GetMapping("/{sectionId}")
     public ResponseEntity<Section> getSection(
             @PathVariable String categoryId,

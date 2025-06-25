@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Category {
     @Id
-    private String id;               // Mongo “ObjectId” as a string
+    private String id;
     private String title;
     private String description;
     private String imageUrl;

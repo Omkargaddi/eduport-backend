@@ -41,15 +41,10 @@ public class PaymentController {
     @PostMapping("/verify")
     public ResponseEntity<String> verifyPayment(@RequestBody PaymentRequest paymentRequest,
                                                 HttpServletRequest request) throws RazorpayException {
-        // 1) Extract & validate JWT
         String token = extractToken(request);
         String email = jwtTokenProvider.getEmailFromToken(token);
-
-        // 2) Look up User by email
         User user = userRepository.findByEmailAndRole(email,Role.USER)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
-        // 3) PASS THE USER’S ID to the service, not their email
         paymentService.verifyPaymentAndSave(paymentRequest, user.getId());
 
         return ResponseEntity.ok("Payment verified and course added.");

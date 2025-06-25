@@ -30,7 +30,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String path = request.getRequestURI();
 
-        // Skip JWT validation on public endpoints
         if (path.startsWith("/user/register") ||
                 path.startsWith("/user/login") ||
                 path.startsWith("/user/forgot-password-otp") ||

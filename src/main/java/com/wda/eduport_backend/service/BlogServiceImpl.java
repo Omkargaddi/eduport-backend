@@ -69,13 +69,10 @@ public class BlogServiceImpl implements BlogService {
         BlogEntity cat = blogRepository.findById(blogId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog not found"));
 
-        // Image update
         if (file != null && !file.isEmpty()) {
             String imageUrl = fileUtil.uploadFile(file);
             cat.setImageUrl(imageUrl);
         }
-
-        // Field updates
         if (request.getTitle() != null && !request.getTitle().isBlank()) {
             cat.setTitle(request.getTitle());
         }
@@ -95,9 +92,8 @@ public class BlogServiceImpl implements BlogService {
             cat.setTags(request.getTags());
         }
 
-        // Save and return updated course
         BlogEntity updated = blogRepository.save(cat);
-        return mapToResponse(updated); // 🔧 use proper converter method
+        return mapToResponse(updated);
     }
 
     private BlogEntity mapToEntity(BlogRequest request) {

@@ -26,11 +26,9 @@ public class PageServiceImpl implements PageService {
 
     @Override
     public Page createPage(String categoryId, String sectionId, PageRequest request, String creatorId) {
-        // verify category exists
         Category cat = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
 
-        // verify section exists and belongs to category
         Section sec = sectionRepository.findById(sectionId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Section not found"));
 
@@ -55,7 +53,6 @@ public class PageServiceImpl implements PageService {
 
     @Override
     public List<Page> getPagesBySection(String sectionId) {
-        // returning empty list if none found is fine
         return pageRepository.findAllBySectionIdOrderByCreatedAtAsc(sectionId);
     }
 
@@ -66,12 +63,10 @@ public class PageServiceImpl implements PageService {
 
     @Override
     public Page updatePage(String categoryId, String sectionId, String pageId, PageRequest request, String creatorId) {
-        // verify category exists
         if (!categoryRepository.existsById(categoryId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found");
         }
 
-        // verify section exists and belongs to category
         Section sec = sectionRepository.findById(sectionId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Section not found"));
 
@@ -82,12 +77,10 @@ public class PageServiceImpl implements PageService {
         Page pg = pageRepository.findById(pageId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Page not found"));
 
-        // check that page belongs to the given section/category
         if (!pg.getSectionId().equals(sectionId) || !pg.getCategoryId().equals(categoryId)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Page does not belong to this Section/Category");
         }
 
-        // ownership check
         if (!pg.getCreatorId().equals(creatorId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only creator can update this page");
         }
@@ -100,26 +93,22 @@ public class PageServiceImpl implements PageService {
 
     @Override
     public void deletePage(String categoryId, String sectionId, String pageId, String creatorId) {
-        // verify category exists
         if (!categoryRepository.existsById(categoryId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found");
         }
-        // verify section exists and belongs to category
         Section sec = sectionRepository.findById(sectionId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Section not found"));
 
         if (!sec.getCategoryId().equals(categoryId)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Section does not belong to this Category");
         }
-        // verify page exists
+
         Page pg = pageRepository.findById(pageId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Page not found"));
 
-        // check that page belongs to given section/category
         if (!pg.getSectionId().equals(sectionId) || !pg.getCategoryId().equals(categoryId)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Page does not belong to this Section/Category");
         }
-        // ownership check
         if (!pg.getCreatorId().equals(creatorId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only creator can delete this page");
         }

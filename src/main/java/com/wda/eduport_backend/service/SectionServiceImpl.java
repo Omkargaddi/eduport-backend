@@ -21,11 +21,10 @@ import java.util.Optional;
 public class SectionServiceImpl implements SectionService {
     private final CategoryRepository categoryRepository;
     private final SectionRepository sectionRepository;
-    private final PageRepository pageRepository; // for “empty” check on Section
+    private final PageRepository pageRepository;
 
     @Override
     public Section createSection(String categoryId, SectionRequest request, String creatorId) {
-        // verify category exists
         Category cat = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
 
@@ -44,7 +43,6 @@ public class SectionServiceImpl implements SectionService {
 
     @Override
     public List<Section> getSectionsByCategory(String categoryId) {
-        // could verify category exists, but returning empty list is okay if none
         return sectionRepository.findAllByCategoryIdOrderByCreatedAtAsc(categoryId);
     }
 
@@ -55,17 +53,16 @@ public class SectionServiceImpl implements SectionService {
 
     @Override
     public Section updateSection(String categoryId, String sectionId, SectionRequest request, String creatorId) {
-        // verify category exists
+
         if (!categoryRepository.existsById(categoryId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found");
         }
         Section sec = sectionRepository.findById(sectionId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Section not found"));
-        // check parent match
+
         if (!sec.getCategoryId().equals(categoryId)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Section does not belong to this Category");
         }
-        // ownership check
         if (!sec.getCreatorId().equals(creatorId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only creator can update this section");
         }
@@ -76,21 +73,17 @@ public class SectionServiceImpl implements SectionService {
 
     @Override
     public void deleteSection(String categoryId, String sectionId, String creatorId) {
-        // verify category exists
         if (!categoryRepository.existsById(categoryId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found");
         }
         Section sec = sectionRepository.findById(sectionId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Section not found"));
-        // parent match
         if (!sec.getCategoryId().equals(categoryId)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Section does not belong to this Category");
         }
-        // ownership check
         if (!sec.getCreatorId().equals(creatorId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only creator can delete this section");
         }
-        // “empty” check: no Pages refer to this Section
         long childCount = pageRepository.countBySectionId(sectionId);
         if (childCount > 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot delete: Section is not empty");

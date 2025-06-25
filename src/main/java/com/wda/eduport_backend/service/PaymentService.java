@@ -38,14 +38,14 @@ public class PaymentService {
 
         RazorpayClient client = new RazorpayClient(razorpayKey, razorpaySecret);
         JSONObject options = new JSONObject();
-        options.put("amount", (int)(course.getPrice() * 100)); // paise
+        options.put("amount", (int)(course.getPrice() * 100));
         options.put("currency", "INR");
         String uuid = UUID.randomUUID().toString().replace("-", "");
-        String shortUuid = uuid.substring(0, 24);  // 24 chars
-        options.put("receipt", "rcpt_" + shortUuid); // total length ~29
+        String shortUuid = uuid.substring(0, 24);
+        options.put("receipt", "rcpt_" + shortUuid);
 
         Order order = client.orders.create(options);
-        return order.toString(); // send full order info to frontend
+        return order.toString();
     }
 
     public void addFreeCourse(String courseId, String userId){
@@ -63,13 +63,11 @@ public class PaymentService {
     }
 
     public void verifyPaymentAndSave(PaymentRequest request, String userId) throws RazorpayException {
-        // 1) Build a single JSONObject with all three fields
         JSONObject options = new JSONObject();
         options.put("razorpay_order_id",   request.getRazorpayOrderId());
         options.put("razorpay_payment_id", request.getRazorpayPaymentId());
         options.put("razorpay_signature",  request.getRazorpaySignature());
 
-        // 2) Call the two‑arg signature verifier
         boolean valid = Utils.verifyPaymentSignature(options, razorpaySecret);
         if (!valid) {
             throw new RuntimeException("Razorpay signature verification failed");
@@ -80,7 +78,6 @@ public class PaymentService {
         CourseEntity course = courseRepository.findById(request.getCourseId())
                 .orElseThrow(() -> new RuntimeException("Course not found"));
 
-        // initialize myCourses if null
         if (user.getMyCourses() == null) {
             user.setMyCourses(new ArrayList<>());
         }

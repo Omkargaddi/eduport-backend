@@ -143,21 +143,17 @@ public class AuthService {
         return userService.findByEmailAndRole(email, role);
     }
     private String extractS3KeyFromUrl(String url) {
-        // Example URL format: https://bucket-name.s3.amazonaws.com/yourfile.jpg
         return url.substring(url.lastIndexOf("/") + 1);
     }
 
 
     public ProfileEditResponse editProfile(ProfileEditRequest request, MultipartFile file) {
-        // Fetch user by email and role
         Optional<User> optionalUser = getUserByEmailAndRole(request.getEmail(), request.getRole());
         if (optionalUser.isEmpty()) {
             throw new RuntimeException("User not found with the provided email and role.");
         }
 
         User user = optionalUser.get();
-
-        // Update username
         user.setUsername(request.getUsername());
         user.setFacebook(request.getFacebook());
         user.setInstagram(request.getInstagram());
@@ -165,25 +161,19 @@ public class AuthService {
         user.setTwitter(request.getTwitter());
         user.setAddress(request.getAddress());
 
-
-        // If a new profile photo is uploaded
         if (file != null && !file.isEmpty()) {
-            // Delete old image from S3 (if it exists)
             String oldImageUrl = user.getProfileImageUrl();
             if (oldImageUrl != null && !oldImageUrl.isBlank()) {
                 String oldKey = extractS3KeyFromUrl(oldImageUrl);
                 fileUtil.deleteFile(oldKey);
             }
 
-            // Upload new image and set it
             String newImageUrl = fileUtil.uploadFile(file);
             user.setProfileImageUrl(newImageUrl);
         }
 
-        // Save updated user
         userRepository.save(user);
 
-        // Return updated profile response
         return ProfileEditResponse.builder()
                 .username(user.getUsername())
                 .profileImageUrl(user.getProfileImageUrl())

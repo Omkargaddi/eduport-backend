@@ -60,7 +60,6 @@ public class NoteServiceImpl implements NoteService {
         NoteEntity cat = noteRepository.findById(noteId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Note not found"));
 
-        // Image update
         if (imageFile != null && !imageFile.isEmpty()) {
             String imageUrl = fileUtil.uploadFile(imageFile);
             cat.setImageUrl(imageUrl);
@@ -70,7 +69,6 @@ public class NoteServiceImpl implements NoteService {
             cat.setPdfUrl(pdfUrl);
         }
 
-        // Field updates
         if (request.getTitle() != null && !request.getTitle().isBlank()) {
             cat.setTitle(request.getTitle());
         }
@@ -81,7 +79,7 @@ public class NoteServiceImpl implements NoteService {
         }
 
         NoteEntity updated = noteRepository.save(cat);
-        return convertToResponse(updated); // 🔧 use proper converter method
+        return convertToResponse(updated);
     }
 
     @Override

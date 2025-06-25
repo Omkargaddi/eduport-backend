@@ -1,7 +1,5 @@
 package com.wda.eduport_backend.service;
 
-import com.wda.eduport_backend.io.ProfileEditRequest;
-import com.wda.eduport_backend.io.ProfileEditResponse;
 import com.wda.eduport_backend.model.Role;
 import com.wda.eduport_backend.model.User;
 import com.wda.eduport_backend.repository.UserRepository;

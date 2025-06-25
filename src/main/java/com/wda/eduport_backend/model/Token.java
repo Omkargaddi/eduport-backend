@@ -13,7 +13,7 @@ public class Token {
     private String id;
     private String email;
     private String otp;
-    private String type; // "RESET" or "VERIFY"
+    private String type;
     private LocalDateTime expiryDate;
     private Role role;
 }

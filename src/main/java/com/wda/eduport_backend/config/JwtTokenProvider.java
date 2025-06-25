@@ -18,14 +18,14 @@ public class JwtTokenProvider {
     @Value("${jwt.secret}")
     private String SECRET_KEY;
 
-    private final long JWT_EXPIRATION = 45 * 60 * 1000; // 15 minutes
+    private final long JWT_EXPIRATION = 45 * 60 * 1000;
 
     public String generateToken(UserDetails userDetails) {
         User user = (User) userDetails;
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", user.getAuthorities());
-        claims.put("role", user.getRole().name()); // Add role to claims
-        return createToken(claims, user.getEmail());  // Store email as subject
+        claims.put("role", user.getRole().name());
+        return createToken(claims, user.getEmail());
     }
 
     private String createToken(Map<String, Object> claims, String subject) {

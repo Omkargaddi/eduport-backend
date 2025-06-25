@@ -50,11 +50,10 @@ public class UserController {
                 Role.USER
         );
 
-        // Build a properly‑formatted Set‑Cookie header:
         ResponseCookie cookie = ResponseCookie.from("jwt", token)
                 .httpOnly(true)
-                .secure(true)              // must be HTTPS
-                .sameSite("None")          // allow cross‑site
+                .secure(true)
+                .sameSite("None")
                 .path("/")
                 .maxAge(Duration.ofMinutes(45))
                 .build();
@@ -64,7 +63,6 @@ public class UserController {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .body("User logged in successfully");
     }
-
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("jwt", null);
@@ -106,7 +104,7 @@ public class UserController {
         String roleString = jwtTokenProvider.getRoleFromToken(token);
         Role role = Role.valueOf(roleString);
 
-        Optional<User> optionalUser = authService.getUserByEmailAndRole(email, role); // Add this method in AuthService
+        Optional<User> optionalUser = authService.getUserByEmailAndRole(email, role);
         if (optionalUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

@@ -9,7 +9,7 @@ public class PageRequest {
     private String title;
 
     @NotBlank(message = "Page content is required")
-    private String content;   // expects an HTML string from TinyMCE
+    private String content;
 
     @NotBlank(message = "Page creator is required")
     private String creator;

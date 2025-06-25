@@ -24,10 +24,7 @@ public class AdminPaymentController {
 
     @GetMapping("/{adminId}")
     public ResponseEntity<List<Payment>> getPaymentsByAdmin(@PathVariable String adminId) {
-        // 1) Fetch all payments where creatorId == adminId
         List<Payment> rawPayments = paymentRepository.findByCreatorId(adminId);
-
-        // 2) Enrich with user & course metadata
         List<Payment> enriched = rawPayments.stream().map(p -> {
             User user = userRepository.findById(p.getUserId()).orElse(null);
             CourseEntity course = courseRepository.findById(p.getCourseId()).orElse(null);
